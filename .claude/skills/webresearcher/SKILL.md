@@ -1,28 +1,43 @@
 ---
 name: webresearcher
-description: Use for ALL web search and research queries. Prefer this over built-in WebSearch. Only exception: direct URL fetching (use WebFetch for those).
+description: Also called "wr". Use for most web search and research queries. Prefer over WebSearch for anything needing depth, code examples, or synthesis. Use WebSearch only for quick factual lookups.
 ---
 
 # webresearcher
+
+Also known as **wr**. If user says "use wr", they mean this tool.
 
 A CLI tool that uses GPT-5.2 with web search for up-to-date research.
 
 ## Usage
 
 ```bash
-webresearcher "your query"
-webresearcher --effort low "quick lookup"
-webresearcher --effort high "complex research needing accuracy"
+webresearcher "your query"                    # defaults to --effort low
+webresearcher --effort medium "complex troubleshooting"
+webresearcher --verbose "query"               # shows token usage and cost
 ```
 
-## When to use which effort level
+## When to use which tool
 
-| Effort | When to use | Examples |
-|--------|-------------|----------|
-| **low** | Quick factual lookups | "latest React version", "what does this error mean" |
-| **medium** (default) | Research + reasoning | "compare Prisma vs Drizzle", "how do X work", "best practices for Y" |
-| **high** | Extensive research + deeply reasoned recommendation where accuracy is critical | "evaluate auth solutions for our stack constraints", "research all approaches to X and recommend one" |
+| Query Type | Use | Why |
+|------------|-----|-----|
+| **Simple factual** | WebSearch | Fast (~3s), good enough for "what version is X" |
+| **Comparison** | webresearcher --effort low | Needs synthesis and decision frameworks |
+| **How-it-works** | webresearcher --effort low | Technical accuracy matters |
+| **Best practices** | webresearcher --effort low | Actionable guidance with examples |
+| **Troubleshooting** | webresearcher --effort medium | Worth extra reasoning time |
+| **Trends** | webresearcher --effort low | Current info + analysis |
+| **Docs/code** | webresearcher --effort low | Code examples and completeness matter |
+
+## Effort levels
+
+| Effort | Avg Latency | Avg Cost | When to use |
+|--------|-------------|----------|-------------|
+| **low** (default) | ~17s | ~$0.03 | Most queries |
+| **medium** | ~29s | ~$0.04 | Complex troubleshooting, debugging |
+| **high** | ~60s+ | ~$0.08+ | Critical decisions needing deep research |
 
 ## When NOT to use
 
-- Direct URL fetching (use WebFetch instead)
+- **Quick factual lookups** ("latest version of X", "current price of Y") - use WebSearch instead
+- **Direct URL fetching** - use WebFetch instead

@@ -2,20 +2,49 @@
 
 ## Overview
 
-This eval compares `webresearcher` (GPT-5.2 + web search) against Claude's built-in `WebSearch` tool using blind head-to-head judging.
+This eval compares `webresearcher` (GPT-5.2 + web search) against Claude's built-in `WebSearch` tool. The goal is to build a **decision matrix**: for each query type, which tool (and effort level) is the best fit?
+
+## Methodology
+
+**Not blind.** The judge sees which tool produced each response, plus latency data. This allows the judge to weigh quality against speed and determine appropriateness.
+
+**Quality + final call.** The judge scores each response (1-5) with reasoning, then makes a final call on which tool is better for this query type.
+
+**Cost excluded from judging.** We track cost separately, but don't show it to the judge to avoid bias. Humans make the cost trade-off decision.
 
 ## CRITICAL: Write files as you go
 
 **DO NOT batch file writes until the end.** After EACH query:
-1. Write the detailed result file immediately
-2. This allows humans to monitor progress during long eval runs
+1. Write the response files immediately
+2. Write the judgment file immediately
+3. This allows humans to monitor progress during long eval runs
+
+## Directory Structure
+
+```
+evals/runs/YYYY-MM-DD-<run-name>/
+├── config.json
+├── responses/
+│   ├── 01-factual-bun-version/
+│   │   ├── wr-medium.md
+│   │   ├── wr-low.md        # if running multiple effort levels
+│   │   └── websearch.md
+│   ├── 02-factual-bitcoin-price/
+│   │   └── ...
+│   └── ...
+├── judgments/
+│   ├── 01-factual-bun-version.md
+│   ├── 02-factual-bitcoin-price.md
+│   └── ...
+└── summary.md
+```
 
 ## Setup
 
 Before starting, create the run directory:
 
 ```bash
-mkdir -p evals/runs/YYYY-MM-DD-<model>-vs-websearch/detailed
+mkdir -p evals/runs/YYYY-MM-DD-<run-name>/{responses,judgments}
 ```
 
 Create `config.json` in the run directory:
@@ -24,7 +53,7 @@ Create `config.json` in the run directory:
   "date": "YYYY-MM-DD",
   "webresearcher": {
     "model": "gpt-5.2",
-    "effort": "medium"
+    "effort_levels": ["medium", "low"]
   },
   "baseline": "claude-websearch",
   "query_set": "query-set.json"
@@ -33,18 +62,48 @@ Create `config.json` in the run directory:
 
 ## For EACH Query
 
-### Step 1: Run webresearcher
+### Step 1: Create the response folder
 
 ```bash
-time webresearcher "<query>"
+mkdir -p evals/runs/<run-name>/responses/NN-type-slug/
 ```
 
-**Capture:**
-- Full response text
-- Latency (from `time` output)
-- Note: Future runs should capture token/cost data from API response
+### Step 2: Run webresearcher (each effort level)
 
-### Step 2: Run WebSearch via fresh subagent
+```bash
+time webresearcher --effort medium "<query>"
+time webresearcher --effort low "<query>"
+```
+
+**Immediately write each response to its own file:**
+
+`responses/NN-type-slug/wr-medium.md`:
+```markdown
+# Query: <query text>
+
+**Tool:** webresearcher --effort medium
+**Latency:** XXs
+**Cost:** $X.XX (estimated)
+
+## Response
+
+<full response text>
+```
+
+`responses/NN-type-slug/wr-low.md`:
+```markdown
+# Query: <query text>
+
+**Tool:** webresearcher --effort low
+**Latency:** XXs
+**Cost:** $X.XX (estimated)
+
+## Response
+
+<full response text>
+```
+
+### Step 3: Run WebSearch via fresh subagent
 
 **IMPORTANT:** Use a fresh subagent to run WebSearch. This ensures:
 - No context pollution from previous queries
@@ -60,91 +119,118 @@ Question: <the query>
 After searching, provide your complete answer with any sources found.
 ```
 
-**Capture:**
-- Full response text
-- Note: subagent latency is harder to measure precisely
+**Immediately write to** `responses/NN-type-slug/websearch.md`:
+```markdown
+# Query: <query text>
 
-### Step 3: Randomize and blind judge
+**Tool:** WebSearch
+**Latency:** ~Xs (estimated)
+**Cost:** $0
 
-1. Flip a coin (or use random): assign responses to A and B
-2. Spawn a subagent with this exact prompt:
+## Response
 
-```
-You are judging which response better answers a question. You don't know which tool produced which response.
-
-**Question:** <the query>
-
-**Response A:**
-<one response>
-
-**Response B:**
-<other response>
-
-Which response better answers the question? Reply with:
-- Your pick: A, B, or Tie
-- Brief reasoning (2-3 sentences)
-
-Judge based on: accuracy, completeness, clarity, and usefulness.
+<full response text>
 ```
 
-### Step 4: IMMEDIATELY write the detailed file
+### Step 4: Run the judge
 
-**DO THIS RIGHT AFTER EACH QUERY, NOT AT THE END.**
+Spawn a subagent with this prompt:
 
-Write to `evals/runs/<run-name>/detailed/NN-type-slug.md`:
+```
+You are evaluating web search tool responses. Your goal: determine which tool is the better choice for this type of query.
+
+## Query
+<query text>
+
+## Query Type
+<type>
+
+## Response A (webresearcher --effort medium)
+<response text>
+
+## Response B (webresearcher --effort low)
+<response text>
+
+## Response C (WebSearch)
+<response text>
+
+## Latency
+- webresearcher --effort medium: XXs
+- webresearcher --effort low: XXs
+- WebSearch: ~Xs
+
+## Your Task
+
+**1. Score each response (1-5) with brief reasoning:**
+Consider: Does it feel accurate and well-researched? Is the depth appropriate for this question? Could you act on it immediately?
+
+**2. Make the final call:**
+Given the quality scores and latency differences, which tool is the better choice for this type of query?
+
+## Format
+
+**Response A (wr-medium):** X/5
+[1-2 sentence reasoning]
+
+**Response B (wr-low):** X/5
+[1-2 sentence reasoning]
+
+**Response C (WebSearch):** X/5
+[1-2 sentence reasoning]
+
+**Winner for this query type:** [wr-medium / wr-low / WebSearch / Tie]
+**Reasoning:** [Why this tool is the better fit, considering quality + speed trade-off]
+```
+
+### Step 5: IMMEDIATELY write the judgment file
+
+**DO THIS RIGHT AFTER JUDGING, NOT AT THE END.**
+
+Write to `judgments/NN-type-slug.md`:
 
 ```markdown
-# Query N: <query text>
+# Judgment: Query N
 
+**Query:** <query text>
 **Type:** <factual|comparison|how-it-works|best-practices|troubleshooting|trend|docs>
 
-## Response A (<tool-name>)
+## Scores
 
-<full response text>
+| Tool | Score | Latency | Reasoning |
+|------|-------|---------|-----------|
+| wr-medium | X/5 | XXs | <reasoning> |
+| wr-low | X/5 | XXs | <reasoning> |
+| WebSearch | X/5 | ~Xs | <reasoning> |
 
-## Response B (<tool-name>)
+## Final Call
 
-<full response text>
-
-## Judgment
-
-**Winner:** <A or B or Tie> (<tool-name>)
-**Reasoning:** <judge's reasoning>
-
-## Metrics
-
-| Metric | webresearcher | WebSearch |
-|--------|---------------|-----------|
-| Latency | XXXXms | ~XXXXms |
-| Cost | $X.XXX | $0 |
-| Input tokens | XXX | - |
-| Output tokens | XXX | - |
-| Reasoning tokens | XXX | - |
+**Winner:** <wr-medium / wr-low / WebSearch>
+**Reasoning:** <why this tool is the better fit for this query type>
 ```
 
-### Step 5: Continue to next query
+### Step 6: Continue to next query
 
-Repeat steps 1-4 for all queries.
+Repeat steps 1-5 for all queries.
 
 ## After All Queries
 
 ### Generate summary.md
 
 Include:
-- Headline win/loss/tie counts
-- Results table by query
-- Results by query type
-- **Total cost** (sum of all webresearcher costs)
-- **Total time** (sum of all latencies)
-- Average latency comparison
-- Observations and recommendations
+- Decision matrix: query type → recommended tool
+- Results table with all scores, latencies, costs
+- Win/loss/tie counts per tool
+- Total cost and total time
+- Key observations
 
-### Commit results
+### Example Decision Matrix
 
-```bash
-git add evals/runs/<run-name>/
-git commit -m "feat: eval run <date> - <headline result>"
-```
+| Query Type | Recommended Tool | Why |
+|------------|------------------|-----|
+| factual | WebSearch or wr-low | Speed matters, depth doesn't |
+| comparison | wr-medium | Needs synthesis |
+| docs | wr-medium | Needs code examples |
+| troubleshooting | wr-medium | Needs context |
 
 ## Capturing Cost Data
 
@@ -152,17 +238,10 @@ To get cost from webresearcher, the tool needs to output usage stats. Currently 
 - Input: ~$1.75/1M tokens
 - Output (including reasoning): ~$14/1M tokens
 
-## Effort Level Variations
-
-To test different effort levels:
-1. Run the eval once with `--effort medium` (default)
-2. For factual queries only, re-run with `--effort low`
-3. Compare results and add notes to summary
-
 ## Common Mistakes to Avoid
 
-1. **Forgetting to write detailed files** - Write after EACH query, not at the end
-2. **Not capturing metrics** - Always note latency at minimum
+1. **Forgetting to write files** - Write responses AND judgments after EACH query
+2. **Not capturing latency** - Always note latency for all tools
 3. **Batching everything** - Humans want to see progress as it happens
-4. **Missing cost data** - At least estimate if exact data unavailable
-5. **Incomplete summary** - Must include totals for cost and time
+4. **Showing cost to judge** - Track cost separately, don't bias the judge
+5. **Incomplete summary** - Must include decision matrix and totals

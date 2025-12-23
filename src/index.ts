@@ -37,8 +37,8 @@ if (args.includes("--install-skill")) {
   }
 }
 
-// Parse --effort flag
-let effort: "low" | "medium" | "high" = "medium";
+// Parse --effort flag (default: low - best quality/speed tradeoff per eval)
+let effort: "low" | "medium" | "high" = "low";
 const effortIndex = args.indexOf("--effort");
 if (effortIndex !== -1) {
   const value = args[effortIndex + 1];
@@ -51,11 +51,19 @@ if (effortIndex !== -1) {
   }
 }
 
+// Parse --verbose flag
+let verbose = false;
+const verboseIndex = args.indexOf("--verbose");
+if (verboseIndex !== -1) {
+  verbose = true;
+  args.splice(verboseIndex, 1);
+}
+
 // Remaining arg is the query
 const query = args[0];
 
 if (!query) {
-  console.error("Usage: webresearcher [--effort low|medium|high] \"your query\"");
+  console.error("Usage: webresearcher [--effort low|medium|high] [--verbose] \"your query\"");
   process.exit(1);
 }
 
@@ -83,6 +91,26 @@ try {
   }
 
   console.log(response.output_text);
+
+  // Print usage stats if verbose mode is enabled
+  if (verbose && response.usage) {
+    const usage = response.usage;
+    const inputTokens = usage.input_tokens || 0;
+    const outputTokens = usage.output_tokens || 0;
+    const reasoningTokens = usage.reasoning_tokens || 0;
+
+    // Cost calculation: $1.75 / 1M input tokens, $14 / 1M output tokens
+    const inputCost = (inputTokens / 1_000_000) * 1.75;
+    const outputCost = (outputTokens / 1_000_000) * 14;
+    const totalCost = inputCost + outputCost;
+
+    console.error(`[verbose] Input tokens: ${inputTokens}`);
+    console.error(`[verbose] Output tokens: ${outputTokens}`);
+    if (reasoningTokens > 0) {
+      console.error(`[verbose] Reasoning tokens: ${reasoningTokens}`);
+    }
+    console.error(`[verbose] Estimated cost: $${totalCost.toFixed(4)}`);
+  }
 } catch (error) {
   console.error("Error:", error instanceof Error ? error.message : "Unknown error occurred");
   process.exit(1);
