@@ -10,24 +10,24 @@ Evaluated against Claude's built-in WebSearch tool across 14 query types. webres
 
 ## Installation
 
-Set your OpenAI API key in your path:
+Set your OpenAI API key:
 
 ```bash
 export OPENAI_API_KEY="your-key-here"
 ```
 
-Requires [Bun](https://bun.sh) runtime.
+Then either run directly (no install):
 
 ```bash
-# Clone the repo
-git clone https://github.com/sky-xo/webresearcher.git
-cd webresearcher
+bunx webresearcher "your query"
+npx webresearcher "your query"
+```
 
-# Install dependencies
-bun install
+Or install globally:
 
-# Link globally
-bun link
+```bash
+bun add -g webresearcher
+npm install -g webresearcher
 ```
 
 ## Usage
