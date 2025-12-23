@@ -1,14 +1,20 @@
 # webresearcher
 
-A CLI tool that uses GPT-5.2 with web search for up-to-date research queries. Designed for AI agents but works great for humans too.
+A CLI tool that uses GPT-5.2 with web search for up-to-date research queries.
 
 ## Why?
 
-Standard web search tools return snippets. This tool returns **synthesized, actionable answers** with reasoning and code examples when relevant.
+Claude code's built-in web search is great for quick fact-lookups, but bad at detailed research.
 
 Evaluated against Claude's built-in WebSearch tool across 14 query types. webresearcher won 13/14 on quality while remaining cost-effective (~$0.03/query).
 
 ## Installation
+
+Set your OpenAI API key in your path:
+
+```bash
+export OPENAI_API_KEY="your-key-here"
+```
 
 Requires [Bun](https://bun.sh) runtime.
 
@@ -22,12 +28,6 @@ bun install
 
 # Link globally
 bun link
-```
-
-Set your OpenAI API key:
-
-```bash
-export OPENAI_API_KEY="your-key-here"
 ```
 
 ## Usage

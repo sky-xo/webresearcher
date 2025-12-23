@@ -1,4 +1,4 @@
-# Eval Results: 2025-12-23 v3
+# Eval Results: 2025-12-23
 
 ## Decision Matrix
 
@@ -70,32 +70,7 @@
 - **Both tools struggled with latency on complex queries**: Query #13 (57s wr-medium, 15s wr-low) and #14 (66s wr-medium, 25s wr-low) suggest room for optimization on documentation-heavy queries
 - **WebSearch's speed advantage disappears when quality matters**: 2-3s responses are attractive, but the shallow depth means users would likely need follow-up queries
 
-## Recommendation
-
-### For SKILL.md
-
-**Default to wr-low for all research queries.** Use WebSearch only for simple factual lookups where:
-- The answer is a single data point (version number, price, date)
-- Speed is critical (under 3s desired)
-- No context or decision-making needed
-
-**Use wr-medium only when:**
-- You explicitly want the most thorough possible response
-- Budget allows for 1.7x higher latency and 36% higher cost
-- The query is mission-critical and you want maximum coverage
-
-**Avoid WebSearch for:**
-- Comparisons (lacks decision frameworks)
-- How-it-works explanations (too superficial)
-- Best practices (missing actionable examples)
-- Troubleshooting (misses critical scenarios)
-- Trends (prone to errors/confusion)
-- Documentation (may use deprecated patterns)
-
-### Suggested SKILL.md Language
-
-```markdown
-## When to use webresearcher
+## Recommendation - when to use webresearcher
 
 Use webresearcher for:
 - Technical comparisons requiring decision frameworks
