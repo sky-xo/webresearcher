@@ -10,9 +10,6 @@
 - [x] Update SKILL.md with eval findings (decision matrix by query type)
 - [x] Add "wr" alias to SKILL.md description for easier triggering
 
-## Next Up
-- [ ] Push to GitHub as `sky-xo/webresearcher`
-
 ## Someday/Maybe
 - [ ] `--verbosity` flag (low/medium/high) - currently self-calibrates well, may not be needed
 - [ ] Automate eval runner (currently manual)

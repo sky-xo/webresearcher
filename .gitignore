@@ -1,1 +1,5 @@
 node_modules
+
+# Eval run artifacts (methodology and summaries are kept)
+evals/runs/*/responses/
+evals/runs/*/judgments/
