@@ -1,0 +1,11 @@
+{
+  "name": "webresearcher",
+  "version": "1.0.0",
+  "type": "module",
+  "bin": {
+    "webresearcher": "./src/index.ts"
+  },
+  "dependencies": {
+    "openai": "^5"
+  }
+}
