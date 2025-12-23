@@ -40,7 +40,7 @@ webresearcher "how do I stream responses with Vercel AI SDK?"
 webresearcher --effort medium "why might Next.js build fail with module not found for an installed package?"
 
 # See token usage and cost
-webresearcher --verbose "current Bitcoin price"
+webresearcher --verbose "compare Redis vs Memcached for session storage"
 ```
 
 ## Effort Levels
