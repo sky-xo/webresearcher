@@ -1,0 +1,16 @@
+[
+  {"id": 1, "type": "factual", "query": "What is the latest stable version of Bun?"},
+  {"id": 2, "type": "factual", "query": "What is the current price of Bitcoin?"},
+  {"id": 3, "type": "comparison", "query": "Compare Prisma vs Drizzle ORM for a new TypeScript project"},
+  {"id": 4, "type": "comparison", "query": "React Server Components vs Next.js App Router - what's the difference?"},
+  {"id": 5, "type": "how-it-works", "query": "How does Bun's bundler work?"},
+  {"id": 6, "type": "how-it-works", "query": "How do Claude Code skills get discovered and loaded?"},
+  {"id": 7, "type": "best-practices", "query": "Best practices for error handling in TypeScript APIs"},
+  {"id": 8, "type": "best-practices", "query": "How should I structure a monorepo in 2025?"},
+  {"id": 9, "type": "troubleshooting", "query": "Why might a Next.js build fail with 'Module not found' for a package that exists?"},
+  {"id": 10, "type": "trend", "query": "What terminals are AI developers preferring currently?"},
+  {"id": 11, "type": "docs", "query": "What's the code to verify Stripe webhook signatures in Node.js?"},
+  {"id": 12, "type": "docs", "query": "How do I define a many-to-many relation in Drizzle ORM?"},
+  {"id": 13, "type": "docs", "query": "How do I stream responses with the Vercel AI SDK?"},
+  {"id": 14, "type": "docs", "query": "What's the correct way to use React Server Actions with forms in Next.js 15?"}
+]
