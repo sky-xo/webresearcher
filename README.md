@@ -33,14 +33,14 @@ npm install -g webresearcher
 ## Usage
 
 ```bash
-# Basic query (uses --effort low by default)
-webresearcher "how do I stream responses with Vercel AI SDK?"
+# Research query - needs current info + synthesis
+webresearcher "What's the recommended way to handle auth in Next.js 15 App Router?"
 
 # Complex troubleshooting (use medium effort)
-webresearcher --effort medium "why might Next.js build fail with module not found for an installed package?"
+webresearcher --effort medium "Why are some Bun projects migrating back to Node in 2025? What issues are they hitting?"
 
 # See token usage and cost
-webresearcher --verbose "compare Redis vs Memcached for session storage"
+webresearcher --verbose "What ORMs are production teams actually using with Cloudflare D1?"
 ```
 
 ## Effort Levels

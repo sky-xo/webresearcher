@@ -1,6 +1,6 @@
 {
   "name": "webresearcher",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI tool that uses GPT-5.2 with web search for up-to-date research queries",
   "type": "module",
   "bin": {
