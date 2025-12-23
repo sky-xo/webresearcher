@@ -30,7 +30,7 @@ Blind head-to-head evaluation comparing webresearcher (GPT-5.2 + web search) aga
 
 ### Query Set (v1)
 
-12 queries across different types:
+14 queries across different types:
 
 ```json
 [
@@ -44,8 +44,10 @@ Blind head-to-head evaluation comparing webresearcher (GPT-5.2 + web search) aga
   {"id": 8, "type": "best-practices", "query": "How should I structure a monorepo in 2025?"},
   {"id": 9, "type": "troubleshooting", "query": "Why might a Next.js build fail with 'Module not found' for a package that exists?"},
   {"id": 10, "type": "trend", "query": "What terminals are AI developers preferring currently?"},
-  {"id": 11, "type": "docs", "query": "How do I handle webhooks with the latest Stripe Node.js SDK?"},
-  {"id": 12, "type": "docs", "query": "What is the current recommended way to do database migrations in Drizzle ORM?"}
+  {"id": 11, "type": "docs", "query": "What's the code to verify Stripe webhook signatures in Node.js?"},
+  {"id": 12, "type": "docs", "query": "How do I define a many-to-many relation in Drizzle ORM?"},
+  {"id": 13, "type": "docs", "query": "How do I stream responses with the Vercel AI SDK?"},
+  {"id": 14, "type": "docs", "query": "What's the correct way to use React Server Actions with forms in Next.js 15?"}
 ]
 ```
 
