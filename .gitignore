@@ -1,4 +1,5 @@
 node_modules
+dist
 
 # Eval run artifacts (methodology and summaries are kept)
 evals/runs/*/responses/

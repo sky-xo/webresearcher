@@ -37,6 +37,20 @@ webresearcher --verbose "query"               # shows token usage and cost
 | **medium** | ~29s | ~$0.04 | Complex troubleshooting, debugging |
 | **high** | ~60s+ | ~$0.08+ | Critical decisions needing deep research |
 
+## Writing good queries
+
+This tool uses GPT-5.2 (an LLM), not a search engine. Write **natural language questions**, not keyword queries.
+
+```bash
+# Bad - keyword stuffed
+webresearcher "Claude Code CLI --resume flag session continuation 2024 2025"
+
+# Good - natural language
+webresearcher "Does Claude Code's --resume flag let you continue sessions after exiting? How does it work?"
+```
+
+The LLM reasons better with conversational questions that explain what you're actually trying to understand.
+
 ## When NOT to use
 
 - **Quick factual lookups** ("latest version of X", "current price of Y") - use WebSearch instead
