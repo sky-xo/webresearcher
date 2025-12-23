@@ -4,24 +4,58 @@
 
 This eval compares `webresearcher` (GPT-5.2 + web search) against Claude's built-in `WebSearch` tool using blind head-to-head judging.
 
-## How to Run
+## CRITICAL: Write files as you go
 
-For each query in `query-set.json`:
+**DO NOT batch file writes until the end.** After EACH query:
+1. Write the detailed result file immediately
+2. This allows humans to monitor progress during long eval runs
 
-### Step 1: Run both tools
+## Setup
+
+Before starting, create the run directory:
 
 ```bash
-# Run webresearcher
-webresearcher "<query>"
-
-# Run WebSearch (use your WebSearch tool)
+mkdir -p evals/runs/YYYY-MM-DD-<model>-vs-websearch/detailed
 ```
 
-Record both responses and their latency.
+Create `config.json` in the run directory:
+```json
+{
+  "date": "YYYY-MM-DD",
+  "webresearcher": {
+    "model": "gpt-5.2",
+    "effort": "medium"
+  },
+  "baseline": "claude-websearch",
+  "query_set": "query-set.json"
+}
+```
 
-### Step 2: Blind judgment
+## For EACH Query
 
-Spawn a subagent with this prompt:
+### Step 1: Run webresearcher
+
+```bash
+time webresearcher "<query>"
+```
+
+**Capture:**
+- Full response text
+- Latency (from `time` output)
+- Note: Future runs should capture token/cost data from API response
+
+### Step 2: Run WebSearch
+
+Use the WebSearch tool with the same query.
+
+**Capture:**
+- Full response text
+- Approximate latency (note start/end)
+
+### Step 3: Randomize and blind judge
+
+1. Flip a coin (or use random): assign responses to A and B
+2. Spawn a subagent with this exact prompt:
 
 ```
 You are judging which response better answers a question. You don't know which tool produced which response.
@@ -29,51 +63,94 @@ You are judging which response better answers a question. You don't know which t
 **Question:** <the query>
 
 **Response A:**
-<one response - randomly assigned>
+<one response>
 
 **Response B:**
-<other response - randomly assigned>
+<other response>
 
 Which response better answers the question? Reply with:
 - Your pick: A, B, or Tie
 - Brief reasoning (2-3 sentences)
 
-Judge based on: accuracy, completeness, clarity, and usefulness of citations.
+Judge based on: accuracy, completeness, clarity, and usefulness.
 ```
 
-### Step 3: Record results
+### Step 4: IMMEDIATELY write the detailed file
 
-For each query, record in `results.json`:
-- Query ID and text
-- Response A content and source tool
-- Response B content and source tool
-- Judgment (A/B/Tie)
-- Judge's reasoning
-- Latency for each tool
-- Cost/tokens for webresearcher
+**DO THIS RIGHT AFTER EACH QUERY, NOT AT THE END.**
 
-### Step 4: Generate summary
+Write to `evals/runs/<run-name>/detailed/NN-type-slug.md`:
 
-After all queries, create `summary.md` with:
-- Win/loss/tie counts
-- Breakdown by query type
+```markdown
+# Query N: <query text>
+
+**Type:** <factual|comparison|how-it-works|best-practices|troubleshooting|trend|docs>
+
+## Response A (<tool-name>)
+
+<full response text>
+
+## Response B (<tool-name>)
+
+<full response text>
+
+## Judgment
+
+**Winner:** <A or B or Tie> (<tool-name>)
+**Reasoning:** <judge's reasoning>
+
+## Metrics
+
+| Metric | webresearcher | WebSearch |
+|--------|---------------|-----------|
+| Latency | XXXXms | ~XXXXms |
+| Cost | $X.XXX | $0 |
+| Input tokens | XXX | - |
+| Output tokens | XXX | - |
+| Reasoning tokens | XXX | - |
+```
+
+### Step 5: Continue to next query
+
+Repeat steps 1-4 for all queries.
+
+## After All Queries
+
+### Generate summary.md
+
+Include:
+- Headline win/loss/tie counts
+- Results table by query
+- Results by query type
+- **Total cost** (sum of all webresearcher costs)
+- **Total time** (sum of all latencies)
 - Average latency comparison
-- Total cost
+- Observations and recommendations
 
-## Output Structure
+### Commit results
 
-Create a timestamped run folder:
-
-```
-evals/runs/YYYY-MM-DD-gpt5.2-vs-websearch/
-├── config.json      # Settings used
-├── results.json     # Full structured results
-├── summary.md       # Headline stats
-└── detailed/        # One .md per query with full responses
+```bash
+git add evals/runs/<run-name>/
+git commit -m "feat: eval run <date> - <headline result>"
 ```
 
-## Tips
+## Capturing Cost Data
 
-- Randomize which response is "A" vs "B" for each query to avoid position bias
-- Run webresearcher with default `--effort medium` unless testing effort levels
-- The judge subagent should have NO context about what tools are being compared
+To get cost from webresearcher, the tool needs to output usage stats. Currently it doesn't - this is a future enhancement. For now, estimate:
+- Input: ~$1.75/1M tokens
+- Output (including reasoning): ~$14/1M tokens
+
+## Effort Level Variations
+
+To test different effort levels:
+1. Run the eval once with `--effort medium` (default)
+2. For factual queries only, re-run with `--effort low`
+3. Compare results and add notes to summary
+
+## Common Mistakes to Avoid
+
+1. **Forgetting to write detailed files** - Write after EACH query, not at the end
+2. **Not capturing metrics** - Always note latency at minimum
+3. **Batching everything** - Humans want to see progress as it happens
+4. **Missing cost data** - At least estimate if exact data unavailable
+5. **Incomplete summary** - Must include totals for cost and time
