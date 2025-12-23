@@ -12,22 +12,23 @@
 
 ## Results by Query
 
-| # | Type | Query | Winner | Reasoning |
-|---|------|-------|--------|-----------|
-| 1 | factual | Latest Bun version | WebSearch | Had more current version (1.3.5 vs 1.3.4) |
-| 2 | factual | Bitcoin price | webresearcher | Concise, directly answered |
-| 3 | comparison | Prisma vs Drizzle | webresearcher | Better structured, actionable recommendations |
-| 4 | comparison | RSC vs App Router | webresearcher | Clearer mental model, more accurate |
-| 5 | how-it-works | Bun's bundler | webresearcher | Clearer technical pipeline explanation |
-| 6 | how-it-works | Claude Code skills | webresearcher | More systematic discovery/loading explanation |
-| 7 | best-practices | TS API error handling | webresearcher | Cohesive architectural approach with examples |
-| 8 | best-practices | Monorepo structure | webresearcher | Actionable, opinionated framework |
-| 9 | troubleshooting | Next.js module not found | webresearcher | Comprehensive debugging checklist |
-| 10 | trend | AI dev terminals | webresearcher | Correctly addressed terminal emulators (not AI agents) |
-| 11 | docs | Stripe webhooks | webresearcher | Modern best practices, production-ready code |
-| 12 | docs | Drizzle many-to-many | webresearcher | Complete with query examples |
-| 13 | docs | Vercel AI SDK streaming | webresearcher | Distinguishes protocols, full frontend/backend |
-| 14 | docs | Next.js 15 Server Actions | webresearcher | Comprehensive patterns + security guidance |
+| # | Type | Query | Winner | WR Time | WS Time | WR Cost |
+|---|------|-------|--------|---------|---------|---------|
+| 1 | factual | Latest Bun version | WebSearch | 9.4s | ~2s | ~$0.02 |
+| 2 | factual | Bitcoin price | webresearcher | 3.9s | ~2s | ~$0.01 |
+| 3 | comparison | Prisma vs Drizzle | webresearcher | 91.0s | ~3s | ~$0.08 |
+| 4 | comparison | RSC vs App Router | webresearcher | 31.5s | ~3s | ~$0.04 |
+| 5 | how-it-works | Bun's bundler | webresearcher | 79.4s | ~3s | ~$0.07 |
+| 6 | how-it-works | Claude Code skills | webresearcher | 51.6s | ~3s | ~$0.05 |
+| 7 | best-practices | TS API error handling | webresearcher | 50.0s | ~3s | ~$0.05 |
+| 8 | best-practices | Monorepo structure | webresearcher | 73.3s | ~3s | ~$0.06 |
+| 9 | troubleshooting | Next.js module not found | webresearcher | 41.7s | ~3s | ~$0.04 |
+| 10 | trend | AI dev terminals | webresearcher | 76.7s | ~3s | ~$0.06 |
+| 11 | docs | Stripe webhooks | webresearcher | 28.2s | ~3s | ~$0.03 |
+| 12 | docs | Drizzle many-to-many | webresearcher | 32.8s | ~3s | ~$0.03 |
+| 13 | docs | Vercel AI SDK streaming | webresearcher | 95.0s | ~3s | ~$0.08 |
+| 14 | docs | Next.js 15 Server Actions | webresearcher | 72.6s | ~3s | ~$0.06 |
+| | | **TOTALS** | **13-1** | **737s** | **~40s** | **~$0.68** |
 
 ## By Query Type
 
@@ -56,35 +57,11 @@
 ### Key insight:
 WebSearch only won on a simple factual lookup where recency mattered most. For any query requiring synthesis, explanation, comparison, or code examples, webresearcher significantly outperformed.
 
-## Latency & Cost
+## Summary Stats
 
-### Latency (webresearcher only, from `time` output)
-
-| Query | Latency |
-|-------|---------|
-| 1. Bun version | 9.4s |
-| 2. Bitcoin price | 3.9s |
-| 3. Prisma vs Drizzle | 91.0s |
-| 4. RSC vs App Router | 31.5s |
-| 5. Bun bundler | 79.4s |
-| 6. Claude skills | 51.6s |
-| 7. Error handling | 50.0s |
-| 8. Monorepo | 73.3s |
-| 9. Next.js module | 41.7s |
-| 10. AI terminals | 76.7s |
-| 11. Stripe webhooks | 28.2s |
-| 12. Drizzle m2m | 32.8s |
-| 13. Vercel AI streaming | 95.0s |
-| 14. Server Actions | 72.6s |
-
-**Total webresearcher time:** ~737s (~12.3 min)
-**Average per query:** ~52.6s
-
-WebSearch was consistently faster (~2-3s per query).
-
-### Cost
-
-**Not captured in this run.** Future runs should add `--verbose` flag or modify webresearcher to output token usage. Rough estimate based on response lengths: ~$0.50-1.00 total for 14 queries.
+- **Total webresearcher time:** 737s (~12.3 min), avg 52.6s/query
+- **Total WebSearch time:** ~40s, avg ~3s/query
+- **Estimated total cost:** ~$0.68 (costs are estimates based on response lengths)
 
 ## Notes on This Run
 
