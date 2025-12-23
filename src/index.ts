@@ -94,10 +94,10 @@ try {
 
   // Print usage stats if verbose mode is enabled
   if (verbose && response.usage) {
-    const usage = response.usage as Record<string, number>;
+    const usage = response.usage;
     const inputTokens = usage.input_tokens || 0;
     const outputTokens = usage.output_tokens || 0;
-    const reasoningTokens = usage.reasoning_tokens || 0; // May not be in SDK types yet
+    const reasoningTokens = (usage.output_tokens_details as { reasoning_tokens?: number })?.reasoning_tokens || 0;
 
     // Cost calculation: $1.75 / 1M input tokens, $14 / 1M output tokens
     const inputCost = (inputTokens / 1_000_000) * 1.75;
