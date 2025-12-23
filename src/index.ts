@@ -4,6 +4,39 @@ import OpenAI from "openai";
 
 const args = process.argv.slice(2);
 
+// Handle --install-skill
+if (args.includes("--install-skill")) {
+  const homeDir = process.env.HOME || process.env.USERPROFILE;
+  if (!homeDir) {
+    console.error("Error: Could not determine home directory");
+    process.exit(1);
+  }
+
+  const targetDir = `${homeDir}/.claude/skills/webresearcher`;
+  const targetPath = `${targetDir}/SKILL.md`;
+
+  const scriptDir = import.meta.dir;
+  const sourcePath = `${scriptDir}/../.claude/skills/webresearcher/SKILL.md`;
+
+  // Verify source exists
+  const sourceFile = Bun.file(sourcePath);
+  if (!(await sourceFile.exists())) {
+    console.error("Error: Could not find SKILL.md source file");
+    process.exit(1);
+  }
+
+  try {
+    await Bun.spawn(["mkdir", "-p", targetDir]).exited;
+    const content = await sourceFile.text();
+    await Bun.write(targetPath, content);
+    console.log(`Installed skill to ${targetPath}`);
+    process.exit(0);
+  } catch (error) {
+    console.error("Error installing skill:", error instanceof Error ? error.message : "Unknown error");
+    process.exit(1);
+  }
+}
+
 // Parse --effort flag
 let effort: "low" | "medium" | "high" = "medium";
 const effortIndex = args.indexOf("--effort");
