@@ -44,13 +44,25 @@ time webresearcher "<query>"
 - Latency (from `time` output)
 - Note: Future runs should capture token/cost data from API response
 
-### Step 2: Run WebSearch
+### Step 2: Run WebSearch via fresh subagent
 
-Use the WebSearch tool with the same query.
+**IMPORTANT:** Use a fresh subagent to run WebSearch. This ensures:
+- No context pollution from previous queries
+- WebSearch is actually used (not answered from memory)
+
+Spawn a subagent with this prompt:
+
+```
+Use the WebSearch tool to answer this question. You MUST use the WebSearch tool - do not answer from memory.
+
+Question: <the query>
+
+After searching, provide your complete answer with any sources found.
+```
 
 **Capture:**
 - Full response text
-- Approximate latency (note start/end)
+- Note: subagent latency is harder to measure precisely
 
 ### Step 3: Randomize and blind judge
 
