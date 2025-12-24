@@ -1,57 +1,32 @@
 ---
 name: webresearcher
-description: Also called "wr". Use for most web search and research queries. Prefer over WebSearch for anything needing depth, code examples, or synthesis. Use WebSearch only for quick factual lookups.
+description: Also called "wr". Optional research agent for broad multi-source research without polluting context. Use when user requests it or when research needs depth across many sites.
 ---
 
 # webresearcher
 
-Also known as **wr**. If user says "use wr", they mean this tool.
+A research agent you can delegate broad research to. Keeps your context clean by doing synthesis externally.
 
-A CLI tool that uses GPT-5.2 with web search for up-to-date research.
+## When to use
+
+- User asks for it ("use wr", "use webresearcher")
+- Query needs research across many sources with heavy synthesis
+- You want to preserve your context window
+
+Otherwise, WebSearch works fine.
 
 ## Usage
 
 ```bash
-webresearcher "your query"                    # defaults to --effort low
-webresearcher --effort medium "complex troubleshooting"
-webresearcher --verbose "query"               # shows token usage and cost
+bunx webresearcher "detailed prompt briefing the agent"
+bunx webresearcher --effort medium "complex topic"
 ```
 
-## When to use which tool
+## How to prompt it
 
-| Query Type | Use | Why |
-|------------|-----|-----|
-| **Simple factual** | WebSearch | Fast (~3s), good enough for "what version is X" |
-| **Comparison** | webresearcher --effort low | Needs synthesis and decision frameworks |
-| **How-it-works** | webresearcher --effort low | Technical accuracy matters |
-| **Best practices** | webresearcher --effort low | Actionable guidance with examples |
-| **Troubleshooting** | webresearcher --effort medium | Worth extra reasoning time |
-| **Trends** | webresearcher --effort low | Current info + analysis |
-| **Docs/code** | webresearcher --effort low | Code examples and completeness matter |
+Brief it like an agent:
+- Explain what you're trying to understand
+- Give context about why you need it
+- Ask for specific details you care about
 
-## Effort levels
-
-| Effort | Avg Latency | Avg Cost | When to use |
-|--------|-------------|----------|-------------|
-| **low** (default) | ~17s | ~$0.03 | Most queries |
-| **medium** | ~29s | ~$0.04 | Complex troubleshooting, debugging |
-| **high** | ~60s+ | ~$0.08+ | Critical decisions needing deep research |
-
-## Writing good queries
-
-This tool uses GPT-5.2 (an LLM), not a search engine. Write **natural language questions**, not keyword queries.
-
-```bash
-# Bad - keyword stuffed
-webresearcher "Claude Code CLI --resume flag session continuation 2024 2025"
-
-# Good - natural language
-webresearcher "Does Claude Code's --resume flag let you continue sessions after exiting? How does it work?"
-```
-
-The LLM reasons better with conversational questions that explain what you're actually trying to understand.
-
-## When NOT to use
-
-- **Quick factual lookups** ("latest version of X", "current price of Y") - use WebSearch instead
-- **Direct URL fetching** - use WebFetch instead
+After it returns, feel free to use WebFetch/WebSearch yourself if you need to dig into specific references or confirm details.

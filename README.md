@@ -33,10 +33,10 @@ npm install -g webresearcher
 ## Usage
 
 ```bash
-# Research query - needs current info + synthesis
-webresearcher "What's the recommended way to handle auth in Next.js 15 App Router?"
+# Research query
+webresearcher "What's the best Next.js auth library in 2025?"
 
-# Complex troubleshooting (use medium effort)
+# Complex queries (use medium effort)
 webresearcher --effort medium "Why are some Bun projects migrating back to Node in 2025? What issues are they hitting?"
 
 # See token usage and cost

@@ -82,6 +82,7 @@ try {
     model: "gpt-5.2",
     reasoning: { effort },
     tools: [{ type: "web_search" }],
+    instructions: "Always use the web_search tool to research current information before answering. The user is specifically using this tool because they need up-to-date web results, not information from your training data.",
     input: query,
   });
 
